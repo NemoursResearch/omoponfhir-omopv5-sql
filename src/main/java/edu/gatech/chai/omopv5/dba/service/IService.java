@@ -30,7 +30,7 @@ import edu.gatech.chai.omopv5.model.entity.BaseEntity;
  *
  * @param <v> the generic type
  */
-public interface IService<v extends BaseEntity> {
+public interface IService<v extends BaseEntity> extends ISqlGeneratingService {
 	
 	/** The version. */
 	static String version = "5.x";

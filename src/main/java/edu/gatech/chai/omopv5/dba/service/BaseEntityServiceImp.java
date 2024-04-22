@@ -28,7 +28,9 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -198,7 +200,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 
 		closeConnection(connection);
-		
 		return entities;
 	}
 
@@ -367,15 +368,31 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return sqlColumnName;
 	}
 
+	public static interface AliasCallback {
+		void push(String name, String sqlName, Object model);
+		void pop();
+		void map();
+		void clear();
+	}
+
+	public String constructSqlSelectWithoutWhereWithAliases(AliasCallback callback) {
+		return constructSqlSelectWithoutWhere(null, false, callback);
+	}
+
 	public String constructSqlSelectWithoutWhere() {
-		return constructSqlSelectWithoutWhere(null, false);
+		return constructSqlSelectWithoutWhere(null, false, null);
 	}
 
 	public String constructSqlSelectWithoutWhere(String rootTableName) {
-		return constructSqlSelectWithoutWhere(rootTableName, false);
+		return constructSqlSelectWithoutWhere(rootTableName, false, null);
 	}
 
 	public String constructSqlSelectWithoutWhere(String rootTableName, boolean getCount) {
+		return constructSqlSelectWithoutWhere(rootTableName, getCount, null);
+	}
+
+	@Override
+	public String constructSqlSelectWithoutWhere(String rootTableName, boolean getCount, AliasCallback callback) {
 		String sqlResultList = "";
 
 		Class<T> clazz = getEntityClass();
@@ -406,6 +423,12 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			return null;
 		}
 
+		if (callback != null) {
+			callback.clear();
+			callback.push(clazz.getSimpleName(), rootTableName, clazz);
+			callback.map();
+		}
+
 		// main table that will be joined to
 		String sqlFromTableList = rootTableName + " " + aliasRootTableName;
 
@@ -421,7 +444,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				System.arraycopy(fields_, 0, fields, 0, fSize);
 				System.arraycopy(parentFields, 0, fields, fSize, pFSize);
 			}
-
 		}
 
 		if (fields == null) {
@@ -474,6 +496,12 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 					if (referenceTableName.equalsIgnoreCase(rootTableName)) {
 						continue;
+					}
+
+					if (callback != null) {
+						callback.push(field.getName(), referenceTableAlias, field);
+						callback.map();
+						callback.pop();
 					}
 
 					String keyTableName = SqlUtil.getTableName(field.getDeclaringClass());
