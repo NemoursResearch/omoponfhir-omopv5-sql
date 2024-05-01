@@ -143,4 +143,7 @@ public interface IService<v extends BaseEntity> extends ISqlGeneratingService {
 
 	v construct (FieldValueList rowResult, v entity, String alias, List<String> columns);
 
+	String getDataSchema();
+	String getVocabSchema();
+
 }

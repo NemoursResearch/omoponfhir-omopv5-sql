@@ -1495,4 +1495,12 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		return entities;
 	}
+
+	public String getDataSchema() {
+		return dataSchema;
+	}
+	public String getVocabSchema() {
+		return vocabSchema;
+	}
+
 }
