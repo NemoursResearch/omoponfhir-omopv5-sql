@@ -156,6 +156,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 		if (schema != null && !schema.isBlank()) {
 			mySchema = schema + ".";
 		}
+		schema = schema.replaceAll("\\.\\.*", ".");
 
 		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1, "
 			+ "fact_relationship.fact_id_1 as fact_relationship_fact_id_1, "
