@@ -30,14 +30,8 @@ public class ConceptRelationship extends BaseEntity {
 	 * 
 	 */
 
-	@Column(name="concept_id_1", nullable=false)
-	private Long conceptId1;
-
 	@JoinColumn(name="concept_id_1", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept concept1;
-
-	@Column(name="concept_id_2", nullable=false)
-    private Long conceptId2;
 
 	@JoinColumn(name="concept_id_2", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept concept2;
@@ -211,21 +205,5 @@ public class ConceptRelationship extends BaseEntity {
 
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from concept_relationship ";
-	}
-
-	public Concept getConcept1() {
-		return concept1;
-	}
-
-	public void setConcept1(Concept concept1) {
-		this.concept1 = concept1;
-	}
-
-	public Concept getConcept2() {
-		return concept2;
-	}
-
-	public void setConcept2(Concept concept2) {
-		this.concept2 = concept2;
 	}
 }
